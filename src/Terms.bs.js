@@ -7,11 +7,14 @@ var React = require("react");
 function termsToEl(t) {
   switch (t.tag | 0) {
     case 0 : 
+        var s = t[0];
+        var c;
+        c = s.tag ? s[0] : "val";
         return React.createElement("span", {
                     style: {
                       color: "green"
                     }
-                  }, t[0]);
+                  }, c);
     case 1 : 
         return React.createElement("span", undefined, "(\\" + (t[0] + " -> "), termsToEl(t[1]), ")");
     case 2 : 
@@ -25,18 +28,23 @@ function substitution(_body, placeholder, substitute) {
     var body = _body;
     switch (body.tag | 0) {
       case 0 : 
-          var s = body[0];
-          var match = s === placeholder;
-          if (match) {
-            return substitute;
+          var match = body[0];
+          if (match.tag === 2) {
+            var s = match[0];
+            var match$1 = s === placeholder;
+            if (match$1) {
+              return substitute;
+            } else {
+              return /* Token */Block.__(0, [/* Variable */Block.__(2, [s])]);
+            }
           } else {
-            return /* Token */Block.__(0, [s]);
+            return body;
           }
       case 1 : 
           var t = body[1];
           var s$1 = body[0];
-          var match$1 = s$1 === placeholder;
-          if (match$1) {
+          var match$2 = s$1 === placeholder;
+          if (match$2) {
             _body = t;
             continue ;
           } else {
@@ -55,23 +63,126 @@ function substitution(_body, placeholder, substitute) {
   };
 }
 
+function etaConvert(t) {
+  switch (t.tag | 0) {
+    case 1 : 
+        var match = t[1];
+        switch (match.tag | 0) {
+          case 0 : 
+          case 1 : 
+              return t;
+          case 2 : 
+              var match$1 = match[1];
+              switch (match$1.tag | 0) {
+                case 0 : 
+                    var match$2 = match$1[0];
+                    if (match$2.tag === 2) {
+                      var match$3 = t[0] === match$2[0];
+                      if (match$3) {
+                        return match[0];
+                      } else {
+                        return t;
+                      }
+                    } else {
+                      return t;
+                    }
+                case 1 : 
+                case 2 : 
+                    return t;
+                
+              }
+          
+        }
+    case 0 : 
+    case 2 : 
+        return t;
+    
+  }
+}
+
+function hasEta(_t) {
+  while(true) {
+    var t = _t;
+    switch (t.tag | 0) {
+      case 0 : 
+          return false;
+      case 1 : 
+          var t1 = t[1];
+          switch (t1.tag | 0) {
+            case 0 : 
+            case 1 : 
+                _t = t1;
+                continue ;
+            case 2 : 
+                var match = t1[1];
+                switch (match.tag | 0) {
+                  case 0 : 
+                      var match$1 = match[0];
+                      if (match$1.tag === 2) {
+                        return t[0] === match$1[0];
+                      } else {
+                        _t = t1;
+                        continue ;
+                      }
+                  case 1 : 
+                  case 2 : 
+                      _t = t1;
+                      continue ;
+                  
+                }
+            
+          }
+      case 2 : 
+          if (hasEta(t[0])) {
+            return true;
+          } else {
+            _t = t[1];
+            continue ;
+          }
+      
+    }
+  };
+}
+
+function hasRedex(_t) {
+  while(true) {
+    var t = _t;
+    switch (t.tag | 0) {
+      case 0 : 
+          return false;
+      case 1 : 
+          _t = t[1];
+          continue ;
+      case 2 : 
+          var t1 = t[0];
+          switch (t1.tag | 0) {
+            case 1 : 
+                return true;
+            case 0 : 
+            case 2 : 
+                if (hasRedex(t1)) {
+                  return true;
+                } else {
+                  _t = t[1];
+                  continue ;
+                }
+            
+          }
+      
+    }
+  };
+}
+
 function betaReduce(t) {
   switch (t.tag | 0) {
     case 0 : 
-        return /* Token */Block.__(0, [t[0]]);
     case 1 : 
-        return /* Abstraction */Block.__(1, [
-                  t[0],
-                  t[1]
-                ]);
+        return t;
     case 2 : 
         var match = t[0];
         switch (match.tag | 0) {
           case 0 : 
-              return /* Application */Block.__(2, [
-                        /* Token */Block.__(0, [match[0]]),
-                        t[1]
-                      ]);
+              return t;
           case 1 : 
               return substitution(match[1], match[0], t[1]);
           case 2 : 
@@ -88,7 +199,61 @@ function betaReduce(t) {
   }
 }
 
+function $$eval(t) {
+  var exit = 0;
+  switch (t.tag | 0) {
+    case 0 : 
+    case 1 : 
+        exit = 1;
+        break;
+    case 2 : 
+        var match = t[0];
+        switch (match.tag | 0) {
+          case 0 : 
+              if (match[0].tag === 3) {
+                switch (t[1].tag | 0) {
+                  case 0 : 
+                      return /* Token */Block.__(0, [/* Symbol */Block.__(1, ["yay"])]);
+                  case 1 : 
+                  case 2 : 
+                      exit = 1;
+                      break;
+                  
+                }
+              } else {
+                exit = 1;
+              }
+              break;
+          case 1 : 
+          case 2 : 
+              exit = 1;
+              break;
+          
+        }
+        break;
+    
+  }
+  if (exit === 1) {
+    var match$1 = hasEta(t);
+    if (match$1) {
+      return etaConvert(t);
+    } else {
+      var match$2 = hasRedex(t);
+      if (match$2) {
+        return betaReduce(t);
+      } else {
+        return t;
+      }
+    }
+  }
+  
+}
+
 exports.termsToEl = termsToEl;
 exports.substitution = substitution;
+exports.etaConvert = etaConvert;
+exports.hasEta = hasEta;
+exports.hasRedex = hasRedex;
 exports.betaReduce = betaReduce;
+exports.$$eval = $$eval;
 /* react Not a pure module */

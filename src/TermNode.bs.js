@@ -12,20 +12,20 @@ var y = /* Abstraction */Block.__(1, [
         /* Abstraction */Block.__(1, [
             "x",
             /* Application */Block.__(2, [
-                /* Token */Block.__(0, ["f"]),
+                /* Token */Block.__(0, [/* Variable */Block.__(2, ["f"])]),
                 /* Application */Block.__(2, [
-                    /* Token */Block.__(0, ["x"]),
-                    /* Token */Block.__(0, ["x"])
+                    /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])]),
+                    /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])])
                   ])
               ])
           ]),
         /* Abstraction */Block.__(1, [
             "x",
             /* Application */Block.__(2, [
-                /* Token */Block.__(0, ["f"]),
+                /* Token */Block.__(0, [/* Variable */Block.__(2, ["f"])]),
                 /* Application */Block.__(2, [
-                    /* Token */Block.__(0, ["x"]),
-                    /* Token */Block.__(0, ["x"])
+                    /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])]),
+                    /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])])
                   ])
               ])
           ])
@@ -34,7 +34,7 @@ var y = /* Abstraction */Block.__(1, [
 
 var yInUse_001 = /* Abstraction */Block.__(1, [
     "z",
-    /* Token */Block.__(0, ["z"])
+    /* Token */Block.__(0, [/* Variable */Block.__(2, ["z"])])
   ]);
 
 var yInUse = /* Application */Block.__(2, [
@@ -42,10 +42,21 @@ var yInUse = /* Application */Block.__(2, [
     yInUse_001
   ]);
 
-function make(param) {
+var etaInUse = /* Abstraction */Block.__(1, [
+    "x",
+    /* Application */Block.__(2, [
+        /* Abstraction */Block.__(1, [
+            "z",
+            /* Token */Block.__(0, [/* Variable */Block.__(2, ["z"])])
+          ]),
+        /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])])
+      ])
+  ]);
+
+function TermNode(Props) {
   var match = React.useReducer((function (state, action) {
-          return /* record */[/* term */Terms$ReactHooksTemplate.betaReduce(state[/* term */0])];
-        }), /* record */[/* term */yInUse]);
+          return /* record */[/* term */Terms$ReactHooksTemplate.$$eval(state[/* term */0])];
+        }), /* record */[/* term */etaInUse]);
   var dispatch = match[1];
   React.useEffect((function () {
           var timerId = setInterval((function (param) {
@@ -63,15 +74,18 @@ var t = /* Application */Block.__(2, [
     /* Abstraction */Block.__(1, [
         "y",
         /* Application */Block.__(2, [
-            /* Token */Block.__(0, ["x"]),
-            /* Token */Block.__(0, ["y"])
+            /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])]),
+            /* Token */Block.__(0, [/* Variable */Block.__(2, ["y"])])
           ])
       ]),
-    /* Token */Block.__(0, ["z"])
+    /* Token */Block.__(0, [/* Variable */Block.__(2, ["z"])])
   ]);
+
+var make = TermNode;
 
 exports.t = t;
 exports.y = y;
 exports.yInUse = yInUse;
+exports.etaInUse = etaInUse;
 exports.make = make;
 /* react Not a pure module */

@@ -1,12 +1,14 @@
 open Terms;
-[@react.component]
 type action =
   | Tick;
 type state = {term};
 let t =
   Application(
-    Abstraction("y", Application(Token("x"), Token("y"))),
-    Token("z"),
+    Abstraction(
+      "y",
+      Application(Token(Variable("x")), Token(Variable("y"))),
+    ),
+    Token(Variable("z")),
   );
 let y =
   Abstraction(
@@ -14,24 +16,40 @@ let y =
     Application(
       Abstraction(
         "x",
-        Application(Token("f"), Application(Token("x"), Token("x"))),
+        Application(
+          Token(Variable("f")),
+          Application(Token(Variable("x")), Token(Variable("x"))),
+        ),
       ),
       Abstraction(
         "x",
-        Application(Token("f"), Application(Token("x"), Token("x"))),
+        Application(
+          Token(Variable("f")),
+          Application(Token(Variable("x")), Token(Variable("x"))),
+        ),
       ),
     ),
   );
-let yInUse = Application(y, Abstraction("z", Token("z")));
+let yInUse = Application(y, Abstraction("z", Token(Variable("z"))));
 
+let etaInUse =
+  Abstraction(
+    "x",
+    Application(
+      Abstraction("z", Token(Variable("z"))),
+      Token(Variable("x")),
+    ),
+  );
+
+[@react.component]
 let make = () => {
   let (state, dispatch) =
     React.useReducer(
       (state, action) =>
         switch (action) {
-        | Tick => {term: betaReduce(state.term)}
+        | Tick => {term: eval(state.term)}
         },
-      {term: yInUse},
+      {term: etaInUse},
     );
   React.useEffect0(() => {
     let timerId = Js.Global.setInterval(() => dispatch(Tick), 1000);
