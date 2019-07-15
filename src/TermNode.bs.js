@@ -42,21 +42,33 @@ var yInUse = /* Application */Block.__(2, [
     yInUse_001
   ]);
 
-var etaInUse = /* Abstraction */Block.__(1, [
-    "x",
+var plusInUse = /* Application */Block.__(2, [
     /* Application */Block.__(2, [
-        /* Abstraction */Block.__(1, [
-            "z",
-            /* Token */Block.__(0, [/* Variable */Block.__(2, ["z"])])
-          ]),
-        /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])])
-      ])
+        /* Token */Block.__(0, [/* Procedure */Block.__(3, [/* Plus */0])]),
+        /* Application */Block.__(2, [
+            /* Application */Block.__(2, [
+                /* Token */Block.__(0, [/* Procedure */Block.__(3, [/* Plus */0])]),
+                /* Application */Block.__(2, [
+                    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* Int */Block.__(0, [2])])]),
+                    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* Int */Block.__(0, [3])])])
+                  ])
+              ]),
+            /* Application */Block.__(2, [
+                /* Token */Block.__(0, [/* Procedure */Block.__(3, [/* Plus */0])]),
+                /* Application */Block.__(2, [
+                    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* Int */Block.__(0, [1])])]),
+                    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* Int */Block.__(0, [2])])])
+                  ])
+              ])
+          ])
+      ]),
+    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* String */Block.__(1, ["foo"])])])
   ]);
 
 function TermNode(Props) {
   var match = React.useReducer((function (state, action) {
           return /* record */[/* term */Terms$ReactHooksTemplate.$$eval(state[/* term */0])];
-        }), /* record */[/* term */etaInUse]);
+        }), /* record */[/* term */plusInUse]);
   var dispatch = match[1];
   React.useEffect((function () {
           var timerId = setInterval((function (param) {
@@ -81,11 +93,23 @@ var t = /* Application */Block.__(2, [
     /* Token */Block.__(0, [/* Variable */Block.__(2, ["z"])])
   ]);
 
+var etaInUse = /* Abstraction */Block.__(1, [
+    "x",
+    /* Application */Block.__(2, [
+        /* Abstraction */Block.__(1, [
+            "z",
+            /* Token */Block.__(0, [/* Variable */Block.__(2, ["z"])])
+          ]),
+        /* Token */Block.__(0, [/* Variable */Block.__(2, ["x"])])
+      ])
+  ]);
+
 var make = TermNode;
 
 exports.t = t;
 exports.y = y;
 exports.yInUse = yInUse;
 exports.etaInUse = etaInUse;
+exports.plusInUse = plusInUse;
 exports.make = make;
 /* react Not a pure module */

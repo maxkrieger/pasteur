@@ -3,13 +3,34 @@
 
 var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
+var NativeProcedures$ReactHooksTemplate = require("./NativeProcedures.bs.js");
+
+function primitive_to_string(p) {
+  if (p.tag) {
+    return p[0];
+  } else {
+    return String(p[0]);
+  }
+}
 
 function termsToEl(t) {
   switch (t.tag | 0) {
     case 0 : 
         var s = t[0];
         var c;
-        c = s.tag ? s[0] : "val";
+        switch (s.tag | 0) {
+          case 0 : 
+              c = primitive_to_string(s[0]);
+              break;
+          case 1 : 
+          case 2 : 
+              c = s[0];
+              break;
+          case 3 : 
+              c = NativeProcedures$ReactHooksTemplate.procToString(s[0]);
+              break;
+          
+        }
         return React.createElement("span", {
                     style: {
                       color: "green"
@@ -18,7 +39,27 @@ function termsToEl(t) {
     case 1 : 
         return React.createElement("span", undefined, "(\\" + (t[0] + " -> "), termsToEl(t[1]), ")");
     case 2 : 
-        return React.createElement("span", undefined, "(", termsToEl(t[0]), " ", termsToEl(t[1]), ")");
+        var t1 = t[0];
+        var exit = 0;
+        switch (t1.tag | 0) {
+          case 0 : 
+              var match = t1[0];
+              if (match.tag === 3) {
+                return React.createElement("span", undefined, "(", termsToEl(/* Token */Block.__(0, [/* Procedure */Block.__(3, [match[0]])])), " ", termsToEl(t[1]), ")");
+              } else {
+                exit = 1;
+              }
+              break;
+          case 1 : 
+          case 2 : 
+              exit = 1;
+              break;
+          
+        }
+        if (exit === 1) {
+          return React.createElement("span", undefined, termsToEl(t1), " ", termsToEl(t[1]));
+        }
+        break;
     
   }
 }
@@ -200,55 +241,31 @@ function betaReduce(t) {
 }
 
 function $$eval(t) {
-  var exit = 0;
-  switch (t.tag | 0) {
-    case 0 : 
-    case 1 : 
-        exit = 1;
-        break;
-    case 2 : 
-        var match = t[0];
-        switch (match.tag | 0) {
-          case 0 : 
-              if (match[0].tag === 3) {
-                switch (t[1].tag | 0) {
-                  case 0 : 
-                      return /* Token */Block.__(0, [/* Symbol */Block.__(1, ["yay"])]);
-                  case 1 : 
-                  case 2 : 
-                      exit = 1;
-                      break;
-                  
-                }
-              } else {
-                exit = 1;
-              }
-              break;
-          case 1 : 
-          case 2 : 
-              exit = 1;
-              break;
-          
-        }
-        break;
-    
-  }
-  if (exit === 1) {
-    var match$1 = hasEta(t);
-    if (match$1) {
-      return etaConvert(t);
-    } else {
-      var match$2 = hasRedex(t);
-      if (match$2) {
-        return betaReduce(t);
+  var stepped = false;
+  var e = t;
+  while(!stepped) {
+    var match = NativeProcedures$ReactHooksTemplate.evalHelper(/* NoResult */Block.__(1, [e]));
+    if (match.tag) {
+      var r = match[0];
+      if (hasEta(r)) {
+        e = etaConvert(r);
+        stepped = true;
+      } else if (hasRedex(r)) {
+        e = betaReduce(r);
+        stepped = true;
       } else {
-        return t;
+        e = r;
+        stepped = true;
       }
+    } else {
+      e = match[0];
+      stepped = true;
     }
-  }
-  
+  };
+  return e;
 }
 
+exports.primitive_to_string = primitive_to_string;
 exports.termsToEl = termsToEl;
 exports.substitution = substitution;
 exports.etaConvert = etaConvert;

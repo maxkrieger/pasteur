@@ -1,4 +1,4 @@
-open Terms;
+open Program;
 type action =
   | Tick;
 type state = {term};
@@ -41,19 +41,43 @@ let etaInUse =
     ),
   );
 
+let plusInUse =
+  Application(
+    Application(
+      Token(Procedure(Plus)),
+      Application(
+        Application(
+          Token(Procedure(Plus)),
+          Application(
+            Token(Primitive(Int(2))),
+            Token(Primitive(Int(3))),
+          ),
+        ),
+        Application(
+          Token(Procedure(Plus)),
+          Application(
+            Token(Primitive(Int(1))),
+            Token(Primitive(Int(2))),
+          ),
+        ),
+      ),
+    ),
+    Token(Primitive(String("foo"))),
+  );
+
 [@react.component]
 let make = () => {
   let (state, dispatch) =
     React.useReducer(
       (state, action) =>
         switch (action) {
-        | Tick => {term: eval(state.term)}
+        | Tick => {term: Terms.eval(state.term)}
         },
-      {term: etaInUse},
+      {term: plusInUse},
     );
   React.useEffect0(() => {
     let timerId = Js.Global.setInterval(() => dispatch(Tick), 1000);
     Some(() => Js.Global.clearInterval(timerId));
   });
-  <div> {termsToEl(state.term)} </div>;
+  <div> {Terms.termsToEl(state.term)} </div>;
 };

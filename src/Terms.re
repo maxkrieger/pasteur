@@ -1,26 +1,19 @@
-type variable = (string, ref(unit));
-type env = list(variable);
-
-type token =
-  | Primitive(ref(unit))
-  | Symbol(string)
-  | Variable(string)
-  | Procedure(string);
-
-type term =
-  | Token(token)
-  | Abstraction(string, term)
-  | Application(term, term);
+open Program;
+let primitive_to_string = (p: primitive) =>
+  switch (p) {
+  | Int(i) => string_of_int(i)
+  | String(s) => s
+  };
 
 let rec termsToEl = (t: term) =>
   switch (t) {
   | Token(s) =>
     let c =
       switch (s) {
-      | Primitive(_) => "val"
+      | Primitive(p) => primitive_to_string(p)
       | Symbol(s) => s
       | Variable(v) => v
-      | Procedure(p) => p
+      | Procedure(p) => NativeProcedures.procToString(p)
       };
     <span style={ReactDOMRe.Style.make(~color="green", ())}>
       {ReasonReact.string(c)}
@@ -31,14 +24,17 @@ let rec termsToEl = (t: term) =>
       {termsToEl(t_)}
       {ReasonReact.string(")")}
     </span>
-  | Application(t1, t2) =>
+  | Application(Token(Procedure(p)), t2) =>
     <span>
       {ReasonReact.string("(")}
-      {termsToEl(t1)}
+      {termsToEl(Token(Procedure(p)))}
       {ReasonReact.string(" ")}
       {termsToEl(t2)}
       {ReasonReact.string(")")}
     </span>
+
+  | Application(t1, t2) =>
+    <span> {termsToEl(t1)} {ReasonReact.string(" ")} {termsToEl(t2)} </span>
   };
 
 let rec substitution = (body: term, placeholder: string, substitute: term) =>
@@ -88,8 +84,27 @@ let rec betaReduce = (t: term) =>
   | _ => t
   };
 
-let eval = (t: term) =>
-  switch (t) {
-  | Application(Token(Procedure(_)), Token(_)) => Token(Symbol("yay"))
-  | _ => hasEta(t) ? etaConvert(t) : hasRedex(t) ? betaReduce(t) : t
+// To evaluate depth-wise, use https://reasonml.github.io/docs/en/imperative-loops#tips-tricks
+let eval = (t: term) => {
+  let stepped = ref(false);
+  let e = ref(t);
+  while (! stepped^) {
+    switch (NativeProcedures.evalHelper(NoResult(e^))) {
+    | NativeProcedures.Result(r) =>
+      e := r;
+      stepped := true;
+    | NativeProcedures.NoResult(r) =>
+      if (hasEta(r)) {
+        e := etaConvert(r);
+        stepped := true;
+      } else if (hasRedex(r)) {
+        e := betaReduce(r);
+        stepped := true;
+      } else {
+        e := r;
+        stepped := true;
+      }
+    };
   };
+  e^;
+};
