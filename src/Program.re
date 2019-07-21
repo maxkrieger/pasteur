@@ -3,10 +3,9 @@ type procedure =
   | Minus;
 type primitive =
   | Int(int)
-  | String(string);
-
-type variable = (string, ref(primitive));
-type env = list(variable);
+  | Float(float)
+  | String(string)
+  | Bool(bool);
 
 type token =
   | Primitive(primitive)

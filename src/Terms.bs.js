@@ -3,13 +3,20 @@
 
 var Block = require("bs-platform/lib/js/block.js");
 var React = require("react");
+var Pervasives = require("bs-platform/lib/js/pervasives.js");
 var NativeProcedures$ReactHooksTemplate = require("./NativeProcedures.bs.js");
 
 function primitive_to_string(p) {
-  if (p.tag) {
-    return p[0];
-  } else {
-    return String(p[0]);
+  switch (p.tag | 0) {
+    case 0 : 
+        return String(p[0]);
+    case 1 : 
+        return Pervasives.string_of_float(p[0]);
+    case 2 : 
+        return p[0];
+    case 3 : 
+        return Pervasives.string_of_bool(p[0]);
+    
   }
 }
 
@@ -37,7 +44,7 @@ function termsToEl(t) {
                     }
                   }, c);
     case 1 : 
-        return React.createElement("span", undefined, "(\\" + (t[0] + " -> "), termsToEl(t[1]), ")");
+        return React.createElement("span", undefined, "(\xce\xbb" + (t[0] + "."), termsToEl(t[1]), ")");
     case 2 : 
         var t1 = t[0];
         var exit = 0;

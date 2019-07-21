@@ -65,6 +65,23 @@ let plusInUse =
     Token(Primitive(String("foo"))),
   );
 
+// let parse_error lexbuf =
+// syntax_error (
+// if lexbuf.Lexing.lex_curr_pos == lexbuf.Lexing.lex_last_pos then
+// "Unexpected end of file"
+// else
+// ("Unexpected token '" ^ (Lexing.lexeme lexbuf) ^ "'")
+// ) (Lexing.lexeme_start_p lexbuf)
+// ;
+
+exception Parse_Error;
+let try_parse = lexbuf =>
+  try (Parser.main(Lexer.token(lexbuf))) {
+  | _ => raise(Parse_Error)
+  };
+
+let string = str => try_parse(Lexing.from_string(str));
+
 [@react.component]
 let make = () => {
   let (state, dispatch) =

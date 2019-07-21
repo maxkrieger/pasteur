@@ -62,7 +62,7 @@ var plusInUse = /* Application */Block.__(2, [
               ])
           ])
       ]),
-    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* String */Block.__(1, ["foo"])])])
+    /* Token */Block.__(0, [/* Primitive */Block.__(0, [/* String */Block.__(2, ["foo"])])])
   ]);
 
 function TermNode(Props) {

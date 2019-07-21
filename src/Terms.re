@@ -3,6 +3,8 @@ let primitive_to_string = (p: primitive) =>
   switch (p) {
   | Int(i) => string_of_int(i)
   | String(s) => s
+  | Float(f) => string_of_float(f)
+  | Bool(b) => string_of_bool(b)
   };
 
 let rec termsToEl = (t: term) =>
@@ -20,7 +22,7 @@ let rec termsToEl = (t: term) =>
     </span>;
   | Abstraction(s, t_) =>
     <span>
-      {ReasonReact.string("(\\" ++ s ++ " -> ")}
+      {ReasonReact.string("(λ" ++ s ++ ".")}
       {termsToEl(t_)}
       {ReasonReact.string(")")}
     </span>
