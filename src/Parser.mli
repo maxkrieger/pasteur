@@ -6,8 +6,8 @@ type token =
   | VARIABLE of (string)
   | PLUS
   | MINUS
-  | LPAREN
-  | RPAREN
+  | L_PAREN
+  | R_PAREN
   | LAMBDA
   | DOT
   | EOF

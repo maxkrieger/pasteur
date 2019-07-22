@@ -11,7 +11,7 @@ function primitive_to_string(p) {
     case 0 : 
         return String(p[0]);
     case 1 : 
-        return Pervasives.string_of_float(p[0]);
+        return p[0].toString();
     case 2 : 
         return p[0];
     case 3 : 

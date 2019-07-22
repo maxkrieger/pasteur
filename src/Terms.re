@@ -3,7 +3,7 @@ let primitive_to_string = (p: primitive) =>
   switch (p) {
   | Int(i) => string_of_int(i)
   | String(s) => s
-  | Float(f) => string_of_float(f)
+  | Float(f) => Js.Float.toString(f)
   | Bool(b) => string_of_bool(b)
   };
 

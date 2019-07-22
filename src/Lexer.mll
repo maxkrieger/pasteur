@@ -8,13 +8,13 @@ let frac = '.' digit*
 let float = digit* frac?
 let id = ['a'-'z' 'A'-'Z' '_'] ['a'-'z' 'A'-'Z' '0'-'9' '_']*
 
-rule read = parse
+rule token = parse
     ' ' { token lexbuf }
   | '\\' { LAMBDA }
   | '(' { L_PAREN }
   | ')' { R_PAREN }
   | '+' { PLUS }
   | '-' { MINUS }
-  | id+ as x { VARIABLE }
+  | id+ as x { VARIABLE x }
   | eof { EOF }
   | _ { raise UnexpectedCharacter }

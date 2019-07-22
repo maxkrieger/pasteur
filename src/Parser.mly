@@ -5,7 +5,7 @@
 %token <string> SYMBOL
 %token <string> VARIABLE
 %token PLUS MINUS
-%token LPAREN RPAREN
+%token L_PAREN R_PAREN
 %token LAMBDA
 %token DOT
 %token EOF
@@ -21,12 +21,12 @@ main:
 
 appable:
     expr { $1 }
-  | appable; expr { Application $1 $2 }
+  | appable; expr { Application ($1, $2) }
 ;
 
 expr:
-    LPAREN; expr; RPAREN { $2 }
-  | LAMBDA; VARIABLE; DOT; expr { Abstraction $2 $4 }
+    L_PAREN; expr; R_PAREN { $2 }
+  | LAMBDA; VARIABLE; DOT; expr { Abstraction ($2, $4) }
   | VARIABLE { Token (Variable $1) }
   | SYMBOL { Token (Symbol $1) }
   | primitive { $1 }

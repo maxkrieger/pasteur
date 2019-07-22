@@ -6,8 +6,8 @@ type token =
   | VARIABLE of (string)
   | PLUS
   | MINUS
-  | LPAREN
-  | RPAREN
+  | L_PAREN
+  | R_PAREN
   | LAMBDA
   | DOT
   | EOF
@@ -17,8 +17,8 @@ let _ = parse_error;;
 let yytransl_const = [|
   262 (* PLUS *);
   263 (* MINUS *);
-  264 (* LPAREN *);
-  265 (* RPAREN *);
+  264 (* L_PAREN *);
+  265 (* R_PAREN *);
   266 (* LAMBDA *);
   267 (* DOT *);
     0 (* EOF *);
@@ -137,8 +137,8 @@ let yycheck = "\010\000\
 let yynames_const = "\
   PLUS\000\
   MINUS\000\
-  LPAREN\000\
-  RPAREN\000\
+  L_PAREN\000\
+  R_PAREN\000\
   LAMBDA\000\
   DOT\000\
   EOF\000\
@@ -173,14 +173,14 @@ let yyact = [|
     let _2 = (Parsing.peek_val __caml_parser_env 0 : Program.term) in
     Obj.repr(
 # 24 "src/Parser.mly"
-                  ( Application _1 _2 )
+                  ( Application (_1, _2) )
 # 178 "src/Parser.ml"
                : 'appable))
 ; (fun __caml_parser_env ->
     let _2 = (Parsing.peek_val __caml_parser_env 1 : Program.term) in
     Obj.repr(
 # 28 "src/Parser.mly"
-                         ( _2 )
+                           ( _2 )
 # 185 "src/Parser.ml"
                : Program.term))
 ; (fun __caml_parser_env ->
@@ -188,7 +188,7 @@ let yyact = [|
     let _4 = (Parsing.peek_val __caml_parser_env 0 : Program.term) in
     Obj.repr(
 # 29 "src/Parser.mly"
-                                ( Abstraction _2 _4 )
+                                ( Abstraction (_2, _4) )
 # 193 "src/Parser.ml"
                : Program.term))
 ; (fun __caml_parser_env ->
